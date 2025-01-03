@@ -7,8 +7,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+//-----------------------------------------ENTRY POINT------------------------------
 @RestController
-public class UserController {
+public class UserController { //This is where all request will be entering and will be response
 
     @Autowired UserService userService;
 

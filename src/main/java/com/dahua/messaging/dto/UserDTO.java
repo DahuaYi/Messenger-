@@ -5,6 +5,7 @@ import java.util.Date;
 
 import com.dahua.messaging.enumeration.Gender;
 
+//This User information class will be store just a while and will be push into database
 public class UserDTO { // DTO = data transfer object
     private String username; // alphanumeric
     private String password;

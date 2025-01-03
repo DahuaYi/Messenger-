@@ -3,6 +3,8 @@ package com.dahua.messaging.request;
 
 import com.dahua.messaging.enumeration.Gender;
 
+//Springboot helps turns json body into parameters
+//This class is to set up all the information into a class to store
 public class RegisterUserRequest {
     private String username; // alphanumeric
     private String password;

@@ -7,6 +7,8 @@ import com.dahua.messaging.dto.UserDTO;
 import com.dahua.messaging.enumeration.Gender;
 import org.springframework.stereotype.Service;
 
+//This class is user's information logic,
+// mainly use for validating formats of user's information
 @Service
 public class UserService {
 
