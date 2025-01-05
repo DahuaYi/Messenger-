@@ -1,10 +1,15 @@
 package com.dahua.messaging.service;
 
 import java.util.Date;
+import java.util.Random;
 import java.util.regex.Pattern;
 
+import com.dahua.messaging.dao.UserDAO;
+import com.dahua.messaging.dao.UserValidationCodeDAO;
 import com.dahua.messaging.dto.UserDTO;
+import com.dahua.messaging.dto.UserValidationCodeDTO;
 import com.dahua.messaging.enumeration.Gender;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 //This class is user's information logic,
@@ -15,6 +20,10 @@ public class UserService {
     private static final String EMAIL_REGEX =
             "^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}$";
     private static final Pattern pattern = Pattern.compile(EMAIL_REGEX);
+
+    @Autowired private UserDAO userDAO;
+    @Autowired private UserValidationCodeDAO userValidationCodeDAO;
+    @Autowired private EmailService emailService;
 
     public void register(String username,
                          String password,
@@ -48,6 +57,24 @@ public class UserService {
         userDTO.setRegisterTime(new Date());
         userDTO.setValid(false);
 
+        this.userDAO.insert(userDTO); //Put information to database
+
+        UserDTO insertedUserDTO = this.userDAO.selectByUsername(username); //从数据库取回用户
+
+        String validationCode = String.format("%06d", new Random().nextInt(1000000)); //创6位数code
+
+        UserValidationCodeDTO userValidationCodeDTO = new UserValidationCodeDTO(); //创一个validationCode 用户的暂存
+        userValidationCodeDTO.setUserId(insertedUserDTO.getId()); //暂时绑定用户的id 用于绑定code和id
+        userValidationCodeDTO.setValidationCode(validationCode); //Code绑定用户 用于之后扔进validationCode的table
+
+        this.userValidationCodeDAO.insert(userValidationCodeDTO);// 拿到了ID和validation code之后 insert到数据库里
+
+        // send email to "email"
+
+        String title = "Welcome to Our Service!";
+        String content = "This is your 6 digits validation codes: " + validationCode;
+        emailService.sendEmail(email, title, content);
+
     }
 
     private static boolean isValidEmail(String email) {
@@ -58,6 +85,31 @@ public class UserService {
     }
 
     private static boolean isValidString(String str) {
+
         return str != null && str.length() >= 4;
+    }
+
+    public void activate(String username, String validationCode) throws Exception{
+        UserDTO userDTO = this.userDAO.selectByUsername(username);
+        System.out.println(userDTO);
+        if (userDTO == null) {
+            throw new Exception();
+        }
+
+        UserValidationCodeDTO userValidationCodeDTO = this.userValidationCodeDAO.selectByUserId(userDTO.getId());
+        System.out.println(userValidationCodeDTO);
+
+        if (userValidationCodeDTO == null) {
+            throw new Exception();
+        }
+
+        if (!validationCode.equals(userValidationCodeDTO.getValidationCode())) {
+            throw new Exception();
+        }
+
+        this.userDAO.updateToValid(userDTO.getId());
+        this.userValidationCodeDAO.delete(userValidationCodeDTO.getId());
+
+
     }
 }

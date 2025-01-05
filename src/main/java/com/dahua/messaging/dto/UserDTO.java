@@ -7,6 +7,7 @@ import com.dahua.messaging.enumeration.Gender;
 
 //This User information class will be store just a while and will be push into database
 public class UserDTO { // DTO = data transfer object
+    private int id; //Identifier/primary key
     private String username; // alphanumeric
     private String password;
     private String email; // 2FA = two-factor authentication
@@ -15,6 +16,15 @@ public class UserDTO { // DTO = data transfer object
     private Gender gender;
     private Date registerTime;
     private Boolean isValid;
+
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
 
     public String getUsername() {
         return username;
@@ -78,5 +88,20 @@ public class UserDTO { // DTO = data transfer object
 
     public void setValid(Boolean valid) {
         isValid = valid;
+    }
+
+    @Override
+    public String toString() {
+        return "UserDTO{" +
+                "id=" + id +
+                ", username='" + username + '\'' +
+                ", password='" + password + '\'' +
+                ", email='" + email + '\'' +
+                ", nickname='" + nickname + '\'' +
+                ", address='" + address + '\'' +
+                ", gender=" + gender +
+                ", registerTime=" + registerTime +
+                ", isValid=" + isValid +
+                '}';
     }
 }
