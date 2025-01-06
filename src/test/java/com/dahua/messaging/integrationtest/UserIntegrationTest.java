@@ -28,9 +28,6 @@ class UserIntegrationTest {
     @Autowired private UserDAO userDAO;
     @Autowired private UserValidationCodeDAO userValidationCodeDAO;
 
-
-
-
     @BeforeEach
     void cleanUpOldData() { //clean data before test because test ok will be put in database
         this.userDAO.deleteAll();
@@ -89,9 +86,44 @@ class UserIntegrationTest {
 
     @Test
     void testActivate_validRequest_returnsOk() throws Exception {
+        String body = """
+                {
+                    "username": "activate",
+                    "password": "1221212121",
+                    "repeatPassword": "1221212121",
+                    "email": "activate@gmail.com",
+                    "nickname": "nickname",
+                    "address": "address",
+                    "gender": "FEMALE"
+                }
+                """;
+        this.mockMvc.perform(post("/users/register")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(body))
+                .andExpect(status().isOk())       //status code in response is 200. bad is 400
+                .andExpect(content().string(""));
 
+        UserDTO userDTO = this.userDAO.selectByUsername("activate");
+        UserValidationCodeDTO userValidationCodeDTO = this.userValidationCodeDAO.selectByUserId((userDTO.getId()));
+
+        String code = userValidationCodeDTO.getValidationCode();
+
+        String body2 = String.format("""
+                {
+                    "username": "activate",
+                    "validationCode": "%s"
+                }
+                """, code);
+
+        this.mockMvc.perform(post("/users/activate")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(body2))
+                .andExpect(status().isOk())       //status code in response is 200. bad is 400
+                .andExpect(content().string(""));
+
+
+        UserDTO userDTO2 = this.userDAO.selectByUsername("activate");
+
+        assertEquals(true, userDTO2.getValid());
     }
-
-
-
 }

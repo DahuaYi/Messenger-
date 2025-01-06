@@ -4,4 +4,12 @@ jobs:
     runs-on: ubuntu-latest #Server using
     steps:
       - uses: actions/checkout@v4 #Download codes
-      - uses: actions/setup
+      - uses: actions/setup-java@v4 #setup java
+        with:
+          distribution: 'corretto' # from amazon
+          java-version: '21'
+      - uses: shogo82148/actions-setup-mysql@v1 #mysql
+        with:
+          mysql-version: "8.0"
+      - run: mysql -uroot < init.sql
+      - run: mvn test

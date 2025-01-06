@@ -77,7 +77,8 @@ public class UserService {
 
         String title = "Welcome to Our Service!";
         String content = "This is your 6 digits validation codes: " + validationCode;
-        emailService.sendEmail(email, title, content);
+//        emailService.sendEmail(email, title, content);
+        //EmailService is now off
 
     }
 
