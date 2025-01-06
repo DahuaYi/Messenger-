@@ -35,16 +35,20 @@ public class UserService {
 
         // validation
         if (!password.equals(repeatPassword)) {
-            throw new Exception();
+            throw new Exception("Passwords are not matched");
         }
         if (!isValidEmail(email)) {
-            throw new Exception();
+            throw new Exception("Email is not valid");
         }
         if (!isValidString(username) || !isValidString(nickname)) {
-            throw new Exception();
+            throw new Exception("Username or nickname is not valid");
         }
         if (!isValidString(password) || password.length() < 8) {
-            throw new Exception();
+            throw new Exception("Password length is not valid");
+        }
+
+        if (this.userDAO.selectByUsername(username) != null) {
+            throw new Exception("Username already exist");
         }
 
         UserDTO userDTO = new UserDTO();
@@ -109,6 +113,23 @@ public class UserService {
 
         this.userDAO.updateToValid(userDTO.getId());
         this.userValidationCodeDAO.delete(userValidationCodeDTO.getId());
+
+
+    }
+
+    public void resendValidationCode(String email) throws Exception{
+        UserDTO userDTO = this.userDAO.selectByEmail(email);
+
+        String validationCode = String.format("%06d", new Random().nextInt(1000000));
+        this.userValidationCodeDAO.deleteByUserId(userDTO.getId()); //delete previous code
+
+        UserValidationCodeDTO userValidationCodeDTO = new UserValidationCodeDTO();
+        userValidationCodeDTO.setId(userDTO.getId());
+        userValidationCodeDTO.setValidationCode(validationCode);
+
+        this.userValidationCodeDAO.insert(userValidationCodeDTO); //insert validation code into table
+
+        emailService.sendEmail(email, "Validation Code", validationCode);
 
 
     }

@@ -1,0 +1,7 @@
+on: push # workflow is triggered on every git push
+jobs:
+  run-tests:
+    runs-on: ubuntu-latest #Server using
+    steps:
+      - uses: actions/checkout@v4 #Download codes
+      - uses: actions/setup

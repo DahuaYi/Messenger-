@@ -6,6 +6,7 @@ import com.dahua.messaging.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 //-----------------------------------------ENTRY POINT------------------------------
@@ -15,10 +16,11 @@ import org.springframework.web.bind.annotation.RestController;
 //    -4)UserDTO - （暂时storing）用于即将存储在数据库的用户信息
 //5)UserDAO - Action（把用户信息储存到数据库）
 
+//This is where all request will be entering and will be response
 @RestController
-public class UserController { //This is where all request will be entering and will be response
+public class UserController {
 
-    @Autowired UserService userService;
+    @Autowired UserService userService;// APIs
 
     @PostMapping("/users/register")
     public void register(@RequestBody RegisterUserRequest registerUserRequest) throws Exception { // request response
@@ -37,4 +39,10 @@ public class UserController { //This is where all request will be entering and w
     public void activate(@RequestBody ActivateUserRequest activateUserRequest) throws Exception {
         this.userService.activate(activateUserRequest.getUsername(), activateUserRequest.getValidationCode());
     }
+
+    @PostMapping("/users/resendValidationCode")
+    public void resendValidationCode(@RequestParam String email) throws Exception{
+        this.userService.resendValidationCode(email);
+    }
+
 }

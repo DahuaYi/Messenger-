@@ -23,4 +23,10 @@ public interface UserValidationCodeDAO { // DAO = data access object
     @Delete("DELETE FROM user_validation_code WHERE id = #{id}")
     void delete(int id);
 
+    @Delete("DELETE FROM user_validation_code WHERE user_id = #{userId}")
+    void deleteByUserId(int userId);
+
+    @Delete("DELETE FROM user_validation_code")
+    void deleteAll();
+
 }
