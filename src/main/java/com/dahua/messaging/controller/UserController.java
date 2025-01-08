@@ -2,12 +2,18 @@ package com.dahua.messaging.controller;
 
 import com.dahua.messaging.request.ActivateUserRequest;
 import com.dahua.messaging.request.RegisterUserRequest;
+import com.dahua.messaging.request.UserLoginRequest;
 import com.dahua.messaging.service.UserService;
+import org.apache.coyote.Response;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.RequestEntity;
+import org.springframework.http.ResponseCookie;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.time.Duration;
+
+import static org.springframework.http.HttpHeaders.SET_COOKIE;
 
 //-----------------------------------------ENTRY POINT------------------------------
 //1)UserController - 一切的起源地
@@ -43,6 +49,29 @@ public class UserController {
     @PostMapping("/users/resendValidationCode")
     public void resendValidationCode(@RequestParam String email) throws Exception{
         this.userService.resendValidationCode(email);
+    }
+
+    @PostMapping("/users/login")
+    public ResponseEntity<Void> login(@RequestBody UserLoginRequest userLoginRequest) throws Exception {
+        var loginToken = this.userService.login(userLoginRequest.getUsername(), userLoginRequest.getPassword()); //Get token
+        ResponseCookie responseCookie = ResponseCookie.from("loginToken", loginToken)
+                .path("/")
+                .maxAge(Duration.ofDays(14))
+                .build();
+        return ResponseEntity.ok()
+                .header(SET_COOKIE, responseCookie.toString())
+                .build();
+    }
+
+    @PostMapping("/users/logout")
+    public ResponseEntity<Void> logout(@CookieValue String loginToken) throws Exception {
+        this.userService.logout(loginToken);
+        ResponseCookie responseCookie = ResponseCookie.from("loginToken", "")
+                .maxAge(Duration.ofDays(0))
+                .build();
+        return ResponseEntity.ok()
+                .header(SET_COOKIE, responseCookie.toString())
+                .build();
     }
 
 }

@@ -16,7 +16,17 @@ public class UserDTO { // DTO = data transfer object
     private Gender gender;
     private Date registerTime;
     private Boolean isValid;
+    private String loginToken;
 
+    private Date lastLoginTime;
+
+    public String getLoginToken() {
+        return loginToken;
+    }
+
+    public void setLoginToken(String loginToken) {
+        this.loginToken = loginToken;
+    }
 
     public int getId() {
         return id;
@@ -88,6 +98,14 @@ public class UserDTO { // DTO = data transfer object
 
     public void setValid(Boolean valid) {
         isValid = valid;
+    }
+
+    public Date getLastLoginTime() {
+        return lastLoginTime;
+    }
+
+    public void setLastLoginTime(Date lastLoginTime) {
+        this.lastLoginTime = lastLoginTime;
     }
 
     @Override

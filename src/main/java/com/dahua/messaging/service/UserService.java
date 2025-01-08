@@ -9,6 +9,7 @@ import com.dahua.messaging.dao.UserValidationCodeDAO;
 import com.dahua.messaging.dto.UserDTO;
 import com.dahua.messaging.dto.UserValidationCodeDTO;
 import com.dahua.messaging.enumeration.Gender;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -131,6 +132,31 @@ public class UserService {
         this.userValidationCodeDAO.insert(userValidationCodeDTO); //insert validation code into table
 
         emailService.sendEmail(email, "Validation Code", validationCode);
+
+
+    }
+
+    public String login(String username, String password) throws Exception {
+        UserDTO userDTO = this.userDAO.selectByUsername(username);
+        if (!password.equals((userDTO.getPassword()))) {
+            throw new Exception("Wrong password");
+        }
+
+        String loginToken = RandomStringUtils.randomAlphanumeric(60);
+        this.userDAO.login(userDTO.getId(), loginToken, new Date());
+
+        return loginToken;
+    }
+
+    public void logout(String loginToken) throws Exception {
+        UserDTO userDTO = this.userDAO.selectByLoginToken(loginToken);
+
+        if (userDTO == null) {
+            throw new Exception("Invalid login token");
+        }
+
+        this.userDAO.logout(userDTO.getId());
+
 
 
     }
