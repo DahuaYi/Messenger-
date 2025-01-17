@@ -4,6 +4,7 @@ import com.dahua.messaging.request.ActivateUserRequest;
 import com.dahua.messaging.request.RegisterUserRequest;
 import com.dahua.messaging.request.UserLoginRequest;
 import com.dahua.messaging.service.UserService;
+import lombok.extern.log4j.Log4j2;
 import org.apache.coyote.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.RequestEntity;
@@ -12,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.Duration;
+import java.util.Date;
 
 import static org.springframework.http.HttpHeaders.SET_COOKIE;
 
@@ -24,6 +26,7 @@ import static org.springframework.http.HttpHeaders.SET_COOKIE;
 
 //This is where all request will be entering and will be response
 @RestController
+@Log4j2
 public class UserController {
 
     @Autowired UserService userService;// APIs
@@ -38,7 +41,6 @@ public class UserController {
                                   registerUserRequest.getAddress(),
                                   registerUserRequest.getEmail(),
                                   registerUserRequest.getGender());
-
     }
 
     @PostMapping("/users/activate")

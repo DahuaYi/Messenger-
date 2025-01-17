@@ -51,4 +51,12 @@ public class MessageDTO {
     public void setContent(String content) {
         this.content = content;
     }
+
+    public Date getSendTime() {
+        return sendTime;
+    }
+
+    public void setSendTime(Date sendTime) {
+        this.sendTime = sendTime;
+    }
 }
